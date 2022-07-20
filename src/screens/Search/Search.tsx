@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
+import { useTheme } from "../../contexts/ThemeProvider";
 
 type State = {
   word: string;
@@ -34,13 +35,14 @@ const Search: React.FC = ({ navigation }: any) => {
     setData({ word: "" });
   };
 
+  const { theme } = useTheme();
+
   const defenitions = results?.map((item: IResults) =>
     item.meanings.map((item: IMeaning) =>
       item.defenitions.map((item: IDefenition) => item)
     )
   );
 
-  console.log("this--------->>>", defenitions);
   return results.length ? (
     <View style={styles.container}></View>
   ) : (

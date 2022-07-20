@@ -4,9 +4,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useTheme } from "../../contexts/ThemeProvider";
 
 const Home: React.FC = ({ navigation }: any) => {
   useEffect(() => {
@@ -15,6 +17,7 @@ const Home: React.FC = ({ navigation }: any) => {
 
   const [showWord, setShowWord] = useState<IShowWordProps>();
   const [data, setData] = useState({ word: "" });
+  const { theme, isLoadingTheme, updateTheme } = useTheme();
 
   const handleChange = (key: keyof State) => {
     return (text: string) => {
@@ -31,30 +34,49 @@ const Home: React.FC = ({ navigation }: any) => {
     setShowWord(res.data[0]);
   };
 
+  const changeTheme = () => updateTheme(theme.themeMode);
+
+  if (isLoadingTheme) return null;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.search}>
-        <TextInput
-          value={data.word}
-          onChangeText={handleChange("word")}
-          style={styles.input}
-          placeholder="Search here..."
-          placeholderTextColor="black"
-        />
-        <TouchableOpacity
-          onPress={handleSubmit}
-          style={styles.button}
-          activeOpacity={0.7}
-          disabled={data.word === ""}
-        >
-          <Text style={styles.text}>Submit</Text>
-        </TouchableOpacity>
+    <>
+      <TouchableOpacity onPress={changeTheme} style={styles.buttonTheme}>
+        <Text style={styles.text}>Switch Theme</Text>
+      </TouchableOpacity>
+      <View
+        style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+      >
+        <View style={styles.search}>
+          <TextInput
+            value={data.word}
+            onChangeText={handleChange("word")}
+            style={styles.input}
+            placeholder="Search here..."
+            placeholderTextColor="black"
+          />
+          <TouchableOpacity
+            onPress={handleSubmit}
+            style={styles.button}
+            activeOpacity={0.7}
+            disabled={data.word === ""}
+          >
+            <Text style={styles.text}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={[styles.word, { color: theme.textColor }]}>
+          Word of the day!
+        </Text>
+        <Text style={[styles.wordMain, { color: theme.textColor }]}>
+          {showWord?.word}
+        </Text>
+        <Text style={[styles.word, { color: theme.textColor }]}>
+          {showWord?.pronunciation}
+        </Text>
+        <Text style={[styles.text, { color: theme.textColor }]}>
+          {showWord?.definition}
+        </Text>
       </View>
-      <Text style={styles.word}>Word of the day!</Text>
-      <Text style={styles.wordMain}>{showWord?.word}</Text>
-      <Text style={styles.word}>{showWord?.pronunciation}</Text>
-      <Text style={styles.text}>{showWord?.definition}</Text>
-    </View>
+    </>
   );
 };
 
@@ -93,17 +115,14 @@ const styles = StyleSheet.create({
   },
   word: {
     fontSize: 25,
-    color: "black",
     margin: 10,
   },
   wordMain: {
     fontSize: 30,
-    color: "pink",
     margin: 10,
   },
   text: {
     fontSize: 25,
-    color: "black",
     margin: 10,
   },
   input: {
@@ -112,9 +131,9 @@ const styles = StyleSheet.create({
     borderColor: "black",
     marginBottom: 15,
     borderRadius: 5,
-    color: "black",
     fontSize: 16,
     height: "100%",
+    backgroundColor: "#fff",
   },
   button: {
     backgroundColor: "pink",
@@ -122,5 +141,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontWeight: "500",
     marginLeft: 10,
+  },
+  buttonTheme: {
+    backgroundColor: "orange",
+    margin: 10,
+    padding: 5,
+    borderRadius: 5,
+    fontWeight: "500",
+    alignItems: "center",
   },
 });

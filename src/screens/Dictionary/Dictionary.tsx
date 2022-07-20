@@ -4,6 +4,7 @@ import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 import SoundPlayer from "react-native-sound-player";
 import Sound from "react-native-sound";
+import { useTheme } from "../../contexts/ThemeProvider";
 
 const Dictionary = () => {
   const route = useRoute();
@@ -12,6 +13,7 @@ const Dictionary = () => {
   const [error, setError] = useState("");
   const [showMore, setShowMore] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string>("");
+  const { theme, isLoadingTheme } = useTheme();
 
   useEffect(() => {
     fetchWordMeaning();
@@ -53,9 +55,15 @@ const Dictionary = () => {
   //     sound.play();
   //   };
 
+  if (isLoadingTheme) return null;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{data.word}</Text>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
+      <Text style={[styles.title, { color: theme.textColor }]}>
+        {data.word}
+      </Text>
       <View style={styles.btnContainer}>
         <TouchableOpacity
           onPress={() => setShowMore(!showMore)}
@@ -76,7 +84,10 @@ const Dictionary = () => {
 
       {meaningArray.map((items) =>
         items.map((item, index) => (
-          <Text key={`__${index}`} style={styles.meaning}>
+          <Text
+            key={`__${index}`}
+            style={[styles.meaning, { color: theme.textColor }]}
+          >
             {item}
           </Text>
         ))
@@ -85,7 +96,10 @@ const Dictionary = () => {
       {!!showMore && (
         <View style={styles.btnContainer}>
           {partsOfSpeech.map((item: string, index: number) => (
-            <Text key={`__${index}`} style={styles.more}>
+            <Text
+              key={`__${index}`}
+              style={[styles.more, { color: theme.textColor }]}
+            >
               {item}
             </Text>
           ))}
@@ -117,13 +131,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 40,
-    color: "pink",
     marginBottom: 10,
   },
   meaning: {
     fontSize: 30,
     margin: 10,
-    color: "black",
   },
   error: {
     color: "red",
@@ -138,7 +150,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 25,
-    color: "black",
     margin: 10,
   },
   btnContainer: {
